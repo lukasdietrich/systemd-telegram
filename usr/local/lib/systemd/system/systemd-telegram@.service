@@ -1,5 +1,5 @@
 [Unit]
-Description=Telegram Notification for %I
+Description=Telegram notification for %I
 Documentation=https://github.com/lukasdietrich/systemd-telegram
 Wants=network.target
 After=network.target
