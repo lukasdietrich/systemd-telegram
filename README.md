@@ -50,7 +50,7 @@ personal `chat_id`. To create both, please see the documentation of the
 Once obtained, both secrets need to be configured in
 `/usr/local/etc/systemd-telegram/telegram.env`.
 
-### Send notification on failure
+### Send notifications on failure
 
 To send a notification on failure (including the journal logs), you must create
 a drop-in for the [service][systemd.service] in question.
@@ -63,10 +63,11 @@ systemctl edit my-service.service
 ```
 
 
-### Send Notification on success
+### Send notifications on success
 
 If you want to send notifications on success, too, add another line with
-`OnSuccess` instead of `OnFailure`.
+`OnSuccess` instead of `OnFailure`. Successful executions do not include journal
+logs.
 
 [telegram]: https://telegram.org/
 [botfather]: https://core.telegram.org/bots#6-botfather
