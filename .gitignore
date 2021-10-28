@@ -1,0 +1,12 @@
+*
+!*/
+
+!.gitignore
+!.editorconfig
+!README.md
+!LICENSE
+!Makefile
+
+!/usr/local/bin/systemd-telegram
+!/usr/local/etc/systemd-telegram/*.env
+!/usr/local/lib/systemd/system/*.service

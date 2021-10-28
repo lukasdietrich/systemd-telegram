@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+log() {
+  echo "$*" >&2
+}
+
+# globals:
+#   TELEGRAM_BOT_TOKEN
+#
+# arguments:
+#   endpoint
+telegram_endpoint() {
+  echo "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/$1"
+}
+
+# globals:
+#   TELEGRAM_CHAT_ID
+#
+# arguments:
+#   message
+#   filename
+#
+# input:
+#   filecontent
+send_document() {
+  curl \
+    --silent \
+    --output "/dev/null" \
+    --show-error \
+    --fail \
+    --form "chat_id=${TELEGRAM_CHAT_ID}" \
+    --form "caption=$1" \
+    --form "document=@-;filename=$2" \
+    "$(telegram_endpoint "sendDocument")"
+}
+
+# globals:
+#   TELEGRAM_CHAT_ID
+#
+# arguments:
+#   message
+send_message() {
+  curl \
+    --silent \
+    --output "/dev/null" \
+    --show-error \
+    --fail \
+    --form "chat_id=${TELEGRAM_CHAT_ID}" \
+    --form "text=$1" \
+    "$(telegram_endpoint "sendMessage")"
+}
+
+# arguments:
+#   unitname
+#   propertyname
+read_unit_property() {
+  systemctl show "$1" --value -p "$2"
+}
+
+# arguments:
+#   unitname
+read_unit_invocation_id() {
+  journalctl -u "$1" -n "1" --output-fields "INVOCATION_ID" -o "cat"
+}
+
+# arguments:
+#   unitname
+read_unit_journal() {
+  invocation_id="$(read_unit_invocation_id "$1")"
+  journalctl -u "$1" -n "10000" _SYSTEMD_INVOCATION_ID="${invocation_id}"
+}
+
+# arguments:
+#   unitname - systemd unit name.
+main() {
+  active_state="$(read_unit_property "$1" "ActiveState")"
+  description="$(read_unit_property "$1" "Description")"
+  message="${description} completed.
+
+Hostname=${HOSTNAME}
+Unit=$1
+ActiveState=${active_state}"
+
+  if [[ "${active_state}" == "failed" ]]; then
+    log "Unit $1 failed. Sending notification with journal."
+    filename="$1.$(date "+%Y-%m-%dT%H:%M:%S%z").txt"
+    read_unit_journal "$1" | send_document "${message}" "${filename}"
+  else
+    log "Unit has state ${active_state}. Sending simple notification"
+    send_message "${message}"
+  fi
+}
+
+main "$@"

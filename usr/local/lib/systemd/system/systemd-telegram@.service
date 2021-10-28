@@ -1,0 +1,12 @@
+[Unit]
+Description=Telegram Notification for %I
+Documentation=https://github.com/lukasdietrich/systemd-telegram
+Wants=network.target
+After=network.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/usr/local/etc/systemd-telegram/telegram.env
+ExecStart=/usr/local/bin/systemd-telegram "%i"
+User=nobody
+Group=systemd-journal
