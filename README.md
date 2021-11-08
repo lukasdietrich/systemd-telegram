@@ -13,7 +13,7 @@ This repository provides a script and systemd service to send notifications via
 ## Installation
 
 The script, as well as a systemd [service][systemd.service], can be installed
-with the provided `Makefile` to `/usr/local/{bin, etc, lib}`.
+with the provided `Makefile`.
 
 You may need root privileges to execute the `Makefile`.
 As with everything coming from the internet, please review the files before

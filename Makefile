@@ -2,11 +2,11 @@
 
 SRC_BIN     = $(wildcard usr/local/bin/*)
 SRC_ETC     = $(wildcard usr/local/etc/systemd-telegram/*)
-SRC_SYSTEMD = $(wildcard usr/local/lib/systemd/system/*)
+SRC_SYSTEMD = $(wildcard etc/systemd/system/*)
 
 DST_BIN     = /usr/local/bin
 DST_ETC     = /usr/local/etc/systemd-telegram
-DST_SYSTEMD = /usr/local/lib/systemd/system
+DST_SYSTEMD = /etc/systemd/system
 
 BACKUP      = existing
 INSTALL     = install --backup=$(BACKUP)
