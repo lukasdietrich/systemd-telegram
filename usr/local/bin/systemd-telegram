@@ -63,14 +63,8 @@ read_unit_property() {
 
 # arguments:
 #   unitname
-read_unit_invocation_id() {
-  journalctl -u "$1" -n "1" --output-fields "INVOCATION_ID" -o "cat"
-}
-
-# arguments:
-#   unitname
 read_unit_journal() {
-  invocation_id="$(read_unit_invocation_id "$1")"
+  invocation_id="$(read_unit_property "$1" "InvocationID")"
   journalctl -u "$1" -n "10000" _SYSTEMD_INVOCATION_ID="${invocation_id}"
 }
 
