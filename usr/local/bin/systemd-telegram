@@ -55,24 +55,32 @@ send_message() {
 }
 
 # arguments:
+#   manager
 #   unitname
 #   propertyname
 read_unit_property() {
-  systemctl show "$1" --value -p "$2"
+  systemctl show "$1" "$2" --value -p "$3"
 }
 
 # arguments:
+#   manager
 #   unitname
 read_unit_journal() {
-  invocation_id="$(read_unit_property "$1" "InvocationID")"
-  journalctl -u "$1" -n "10000" _SYSTEMD_INVOCATION_ID="${invocation_id}"
+  invocation_id="$(read_unit_property "$1" "$2" "InvocationID")"
+  journalctl "$1" -u "$2" -n "10000" _SYSTEMD_INVOCATION_ID="${invocation_id}"
 }
 
 # arguments:
 #   unitname - systemd unit name.
+#   uid - numeric uid of user running the service manager instance
 main() {
-  active_state="$(read_unit_property "$1" "ActiveState")"
-  description="$(read_unit_property "$1" "Description")"
+  if [[ "${2:-0}" == "0" ]]; then
+    manager="--system"
+  else
+    manager="--user"
+  fi
+  active_state="$(read_unit_property "$manager" "$1" "ActiveState")"
+  description="$(read_unit_property "$manager" "$1" "Description")"
   message="${description} completed.
 
 Hostname=${HOSTNAME}
@@ -82,7 +90,7 @@ ActiveState=${active_state}"
   if [[ "${active_state}" == "failed" ]]; then
     log "Unit $1 failed. Sending notification with journal."
     filename="$1.$(date "+%Y-%m-%dT%H:%M:%S%z").txt"
-    read_unit_journal "$1" | send_document "${message}" "${filename}"
+    read_unit_journal "${manager}" "$1" | send_document "${message}" "${filename}"
   else
     log "Unit has state ${active_state}. Sending simple notification"
     send_message "${message}"
