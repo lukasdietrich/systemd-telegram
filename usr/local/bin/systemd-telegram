@@ -84,7 +84,7 @@ ActiveState=${active_state}"
 
   if [[ "${active_state}" == "failed" ]]; then
     log "Unit $2 failed. Sending notification with journal."
-    filename="$2.$(date "+%Y-%m-%dT%H:%M:%S%z").txt"
+    filename="$2.$(date "+%Y-%m-%dT%H-%M-%S%z").txt"
     read_unit_journal "$1" "$2" | send_document "${message}" "${filename}"
   else
     log "Unit $2 has state ${active_state}. Sending simple notification"
