@@ -7,4 +7,4 @@ After=network.target
 [Service]
 Type=oneshot
 EnvironmentFile=%h/.config/systemd-telegram/telegram.env
-ExecStart=/usr/local/bin/systemd-telegram "%i" "%U"
+ExecStart=/usr/local/bin/systemd-telegram --user "%i"
