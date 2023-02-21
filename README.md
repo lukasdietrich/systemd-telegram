@@ -52,7 +52,8 @@ Once obtained, both secrets need to be configured in
 
 ### Using `--user` units
 
-To send notifications with `--user` units, you need to add the above bot secrets (or a new pair) to `~/.config/systemd-telegram/telegram.env`.
+To send notifications with `--user` units, you need to add the above bot secrets
+(or a new pair) to `~/.config/systemd-telegram/telegram.env`.
 
 ### Send notifications on failure
 
