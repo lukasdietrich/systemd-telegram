@@ -50,6 +50,11 @@ personal `chat_id`. To create both, please see the documentation of the
 Once obtained, both secrets need to be configured in
 `/usr/local/etc/systemd-telegram/telegram.env`.
 
+### Using `--user` units
+
+To send notifications with `--user` units, you need to add the above bot secrets
+(or a new pair) to `~/.config/systemd-telegram/telegram.env`.
+
 ### Send notifications on failure
 
 To send a notification on failure (including the journal logs), you must create

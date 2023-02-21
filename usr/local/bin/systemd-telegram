@@ -55,36 +55,39 @@ send_message() {
 }
 
 # arguments:
+#   system_or_user_flag
 #   unitname
 #   propertyname
 read_unit_property() {
-  systemctl show "$1" --value -p "$2"
+  systemctl show "$1" "$2" --value -p "$3"
 }
 
 # arguments:
+#   system_or_user_flag
 #   unitname
 read_unit_journal() {
-  invocation_id="$(read_unit_property "$1" "InvocationID")"
-  journalctl -u "$1" -n "10000" _SYSTEMD_INVOCATION_ID="${invocation_id}"
+  invocation_id="$(read_unit_property "$1" "$2" "InvocationID")"
+  journalctl "$1" -u "$2" -n "10000" _SYSTEMD_INVOCATION_ID="${invocation_id}"
 }
 
 # arguments:
-#   unitname - systemd unit name.
+#   system_or_user_flag - either "--system" or "--user"
+#   unitname            - systemd unit name.
 main() {
-  active_state="$(read_unit_property "$1" "ActiveState")"
-  description="$(read_unit_property "$1" "Description")"
+  active_state="$(read_unit_property "$1" "$2" "ActiveState")"
+  description="$(read_unit_property "$1" "$2" "Description")"
   message="${description} completed.
 
 Hostname=${HOSTNAME}
-Unit=$1
+Unit=$2
 ActiveState=${active_state}"
 
   if [[ "${active_state}" == "failed" ]]; then
-    log "Unit $1 failed. Sending notification with journal."
-    filename="$1.$(date "+%Y-%m-%dT%H:%M:%S%z").txt"
-    read_unit_journal "$1" | send_document "${message}" "${filename}"
+    log "Unit $2 failed. Sending notification with journal."
+    filename="$2.$(date "+%Y-%m-%dT%H:%M:%S%z").txt"
+    read_unit_journal "$1" "$2" | send_document "${message}" "${filename}"
   else
-    log "Unit has state ${active_state}. Sending simple notification"
+    log "Unit $2 has state ${active_state}. Sending simple notification"
     send_message "${message}"
   fi
 }
